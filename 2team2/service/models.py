@@ -24,7 +24,7 @@ class Medi_Info(models.Model):
     )
     patSex = models.CharField(max_length=6, choices=SEX_CHOICES)
     patBirth = models.DateField()
-    patAddress = models.CharField(max_length=100)
+    patAddress = models.CharField(max_length=200)
     patSSN = models.CharField(max_length=14)
     BLOOD_CHOICES=(
         ('A','A'),
@@ -85,7 +85,6 @@ class Diagnosis(models.Model):
     user_id = models.ForeignKey(User, on_delete=models.CASCADE)
     info_id = models.ForeignKey(Medi_Info, on_delete=models.CASCADE)
     doc_id = models.ForeignKey(Doctor, on_delete=models.CASCADE)
-    updateDate = models.DateTimeField(auto_now_add=True)
     diagDate = models.DateField()
     diagRegi = models.CharField(max_length=50)
     diagNum = models.CharField(max_length=50)
@@ -95,8 +94,63 @@ class Diagnosis(models.Model):
     diagMinor = models.CharField(max_length=300)
     diagMinCode = models.CharField(max_length=300)
     diagInitDate = models.DateField()
-    diagMemo = models.TextField
+    diagMemo = models.TextField(null=False, blank=False, default='')
     diagIn = models.DateField()
     diagOut = models.DateField()
     diagUSage = models.CharField(max_length=50, blank=True, null=True)
-    diagETC = models.TextField() #api 명세서에 char로 해두었는데 비고면 무슨 내용이 어떻게 들어갈지 몰라 text가 나을 것 같아 바꿨습니다..
+    diagETC = models.TextField(null=False, blank=False, default='') #api 명세서에 char로 해두었는데 비고면 무슨 내용이 어떻게 들어갈지 몰라 text가 나을 것 같아 바꿨습니다..
+    updateDate = models.DateTimeField(auto_now_add=True)
+
+class Prescription(models.Model):
+    user_id = models.ForeignKey(User, on_delete=models.CASCADE)
+    info_id = models.ForeignKey(Medi_Info, on_delete=models.CASCADE)
+    diag_id = models.ForeignKey(Diagnosis, on_delete=models.CASCADE)
+    prePharm = models.CharField(max_length=100)
+    preAddress = models.CharField(max_length=200)
+    preDate = models.DateField()
+    preChem = models.CharField(max_length=20)
+    updateDate = models.DateTimeField(auto_now_add=True)
+    #approveDate = models.DateTimeField() --- erd에는 있는데 api명세서에는 없어서 일단 빼두었습니다
+
+class Medication(models.Model):
+    user_id = models.ForeignKey(User, on_delete=models.CASCADE)
+    info_id = models.ForeignKey(Medi_Info, on_delete=models.CASCADE)
+    diag_id = models.ForeignKey(Diagnosis, on_delete=models.CASCADE)
+    pre_id = models.ForeignKey(Prescription, on_delete=models.CASCADE)
+    mediName = models.CharField(max_length=100)
+    mediEffect = models.CharField(max_length=300)
+    mediDetail = models.CharField(max_length=100)
+    mediCode = models.CharField(max_length=100)
+    mediUnit = models.CharField(max_length=50)
+    mediAmount = models.CharField(max_length=50)
+    mediCount = models.CharField(max_length=50)
+    mediPeriod = models.CharField(max_length=50)
+
+class Surgery(models.Model) :
+    user_id = models.ForeignKey(User, on_delete=models.CASCADE)
+    info_id = models.ForeignKey(Medi_Info, on_delete=models.CASCADE)
+    diag_id = models.ForeignKey(Diagnosis, on_delete=models.CASCADE)
+    doc_id = models.ForeignKey(Doctor, on_delete=models.CASCADE)
+    surChartNum = models.CharField(max_length=50)
+    surWriter = models.CharField(max_length=20)
+    surDate = models.DateField()
+    surNum = models.IntegerField()
+    surHospital = models.CharField(max_length=100)
+    surField = models.CharField(max_length=300)
+    surOper = models.CharField(max_length=20)
+    surAssi = models.CharField(max_length=20)
+    surAnesDoc = models.CharField(max_length=20)
+    surName = models.CharField(max_length=100)
+    surCode = models.CharField(max_length=50)
+    surPreDiag = models.CharField(max_length=100)
+    surPostDiag = models.CharField(max_length=100)
+    surAnes = models.CharField(max_length=100)
+    surEvent = models.BooleanField(default=False) #False-무 / True-유
+    surRemoval = models.BooleanField(default=False) #False-무 / True-유
+    surBloodTrans = models.BooleanField(default=False) #False-무 / True-유
+    surPre = models.TextField(null=False, blank=False, default='')
+    surDur = models.TextField(null=False, blank=False, default='')
+    surPost = models.TextField(null=False, blank=False, default='')
+    surTube = models.BooleanField(default=False) #False-무 / True-유
+    updateDate = models.DateTimeField(auto_now_add=True)
+    #approveDate = models.DateTimeField() --- erd에는 있는데 api명세서에는 없어서 일단 빼두었습니다
