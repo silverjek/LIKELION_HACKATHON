@@ -32,7 +32,7 @@ class MediInfoSerializer(serializers.ModelSerializer):
         model = Medi_Info
         fields = ['id','user_id','patName','patSex','patBirth',
                   'patAddress','patSSN','patBlood','patRH',
-                  'patHeight','patWeight','patPhone','updateDate']
+                  'patHeight','patWeight','patPhone','updateDate','caution', 'fam_history', 'guardian']
 
 class DoctorSerializer(serializers.ModelSerializer):
     class Meta:
