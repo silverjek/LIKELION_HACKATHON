@@ -8,7 +8,7 @@ if defined _OLD_CODEPAGE (
     "%SystemRoot%\System32\chcp.com" 65001 > nul
 )
 
-set VIRTUAL_ENV=C:\likelion\중앙해커톤\back\LIKELION_HACKATHON\newvenv
+set VIRTUAL_ENV=C:\likelion\중앙해커톤\Backend\LIKELION_HACKATHON\newvenv
 
 if not defined PROMPT set PROMPT=$P$G
 
