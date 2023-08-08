@@ -51,23 +51,24 @@ class Gua_Write(views.APIView):
 #환자 의료정보 상세조회
 
 class MediInfoDetailView(views.APIView):
-    def get(self, request, pk,  format=None):
-        mediinfo=get_object_or_404(Medi_Info, pk=pk) #Medi_info 모델 pk
-        caution=get_object_or_404(Caution, pk=pk)
-        famhistory=get_object_or_404(Fam_History, pk=pk)
-        guardian=get_object_or_404(Guardian, pk=pk)
+    def get(self, request, pk, format=None):
+        mediinfo = get_object_or_404(Medi_Info, pk=pk)  # Medi_info 모델 pk
+        cautions = Caution.objects.filter(info_id=pk)
+        famhistories = Fam_History.objects.filter(info_id=pk)
+        guardians = Guardian.objects.filter(info_id=pk)
 
-        medi_serializer=MediInfoSerializer(mediinfo)
-        cau_serializer=CautionSerializer(caution)
-        fam_serializer=FamHisSerializer(famhistory)
-        gua_serializer=GuardianSerializer(guardian)
+        medi_serializer = MediInfoSerializer(mediinfo)
+        cau_serializers = [CautionSerializer(caution) for caution in cautions]
+        fam_serializers = [FamHisSerializer(famhistory) for famhistory in famhistories]
+        gua_serializers = [GuardianSerializer(guardian) for guardian in guardians]
 
-        combined_data={
-            'medi':medi_serializer.data,
-            'cau':cau_serializer.data,
-            'fam':fam_serializer.data,
-            'gua':gua_serializer.data
+        combined_data = {
+            'medi': medi_serializer.data,
+            'cau': [cau_serializer.data for cau_serializer in cau_serializers],
+            'fam': [fam_serializer.data for fam_serializer in fam_serializers],
+            'gua': [gua_serializer.data for gua_serializer in gua_serializers]
         }
+
         #Caution 모델의 id, cauMedicine, cauLevel, cauName, cauType, cauSymptom
         #Fam_History 모델의 id, info_id, famDiag, famRelation, famBirth, famDeath,, famDReason
         #Guardian 모델의 id, info_id, guaName, guaRelation, guaPhone
