@@ -4,7 +4,36 @@ from .models import *
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['id','username','password','userType','latestUpdate']
+        fields = ['id','username','password','userType']
+
+    def create(self, validated_data):
+        user=User.objects.create(
+            userType=validated_data['userType'],
+            username=validated_data['username'],
+        )
+        user.set_password(validated_data['password'])
+        user.save()
+
+        return user
+
+class UserLoginSerializer(serializers.Serializer):
+    username=serializers.CharField(max_length=20)
+    password=serializers.CharField(max_length=20, write_only=True)
+    userType=serializers.BooleanField(default=True)
+
+    def validate(self, data):
+        username=data.get("username", None)
+        password=data.get("password", None)
+
+        if User.objects.filter(username=username).exists():
+            user=User.objects.get(username=username)
+
+            if not user.check_password(password):
+                raise serializers.ValidationError("Incorrect password")
+            else:
+                return user
+            
+        raise serializers.ValidationError("User does not exist")
 
 class CautionSerializer(serializers.ModelSerializer):
     class Meta:
@@ -32,7 +61,7 @@ class MediInfoSerializer(serializers.ModelSerializer):
         model = Medi_Info
         fields = ['id','user_id','patName','patSex','patBirth',
                   'patAddress','patSSN','patBlood','patRH',
-                  'patHeight','patWeight','patPhone','updateDate','caution', 'fam_history', 'guardian']
+                  'patHeight','patWeight','patPhone','updateDate','latestUpdate', 'caution', 'fam_history', 'guardian']
 
 class DoctorSerializer(serializers.ModelSerializer):
     class Meta:
