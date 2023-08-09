@@ -17,13 +17,13 @@ urlpatterns=[
     path('manage/write/medication/', Medication_Write.as_view()),
     path('manage/write/surgery/', Surgery_Write.as_view()),
     
-    path('doctor/access/<int:pk>/medicalinfo/',DOC_MediInfoDetailView.as_view()),
-    path('doctor/access/<int:pk>/diagnosis/',DOC_DiagnosisListView.as_view()),
-    path('doctor/access/<int:first_pk>/diagnosis/<int:second_pk>/',DOC_DiagnosisDetailView.as_view()),
-    path('doctor/access/<int:pk>/medication/',DOC_PrescriptionListView.as_view()),
-    path('doctor/access/<int:first_pk>/medication/<int:second_pk>/',DOC_PrescriptionDetailView.as_view()),
-    path('doctor/access/<int:pk>/surgery/',DOC_SurgeryListView.as_view()),
-    path('/doctor/access/<int:first_pk>/surgery/<int:second_pk>/',DOC_SurgeryDetailView.as_view()),
+    path('doctor/access/<int:pk>/medicalinfo/',MediInfoDetailView.as_view()),
+    path('doctor/access/<int:pk>/diagnosis/',DiagnosisListView.as_view()),
+    path('doctor/access/<int:first_pk>/diagnosis/<int:second_pk>/',DiagnosisDetailView.as_view()),
+    path('doctor/access/<int:pk>/medication/',PrescriptionListView.as_view()),
+    path('doctor/access/<int:first_pk>/medication/<int:second_pk>/',PrescriptionDetailView.as_view()),
+    path('doctor/access/<int:pk>/surgery/',SurgeryListView.as_view()),
+    path('/doctor/access/<int:first_pk>/surgery/<int:second_pk>/',SurgeryDetailView.as_view()),
     #path('patient/access/<int:pk>/medicalinfo/',PAT_MediInfoDetailView.as_view()),
     
     

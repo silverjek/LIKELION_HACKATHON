@@ -93,11 +93,31 @@ class Surgery_Write(views.APIView):
         return Response(sur_serializer.errors)
     
 '''
+<회원가입/로그인> ------------------------------------------------------------------
+'''
+
+class SignUpView(views.APIView):
+    def post(self, request):
+        serializer=UserSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({'message':'회원가입 성공', 'data':serializer.data})
+        return Response({'message':'회원가입 실패', 'error':serializer.errors})
+
+class LoginView(views.APIView):
+    def post(self, request):
+        serializer=UserLoginSerializer(data=request.data)
+
+        if serializer.is_valid():
+            return Response({'message':'로그인 성공', 'data':serializer.data})
+        return Response({'message':'로그인 실패', 'error':serializer.errors})
+    
+'''
 <의사> ------------------------------------------------------------------
 '''
 
 #의사_의료정보 상세조회
-class DOC_MediInfoDetailView(views.APIView):
+class MediInfoDetailView(views.APIView):
     def get(self, request, pk, format=None):
         mediinfo = get_object_or_404(Medi_Info, pk=pk)  # Medi_info 모델 pk
         cautions = Caution.objects.filter(info_id=pk)
@@ -119,14 +139,14 @@ class DOC_MediInfoDetailView(views.APIView):
         return Response(combined_data)
 
 #의사_진단 리스트
-class DOC_DiagnosisListView(views.APIView):
+class DiagnosisListView(views.APIView):
     def get(self, request, pk, format=None):
         diags = Diagnosis.objects.all(info_id=pk)
         serializer = DiagnosisSerializer(diags, many=True) #필드 제한 필요
         return Response(serializer.data)
     
 #의사_진단 상세조회
-class DOC_DiagnosisDetailView(views.APIView):
+class DiagnosisDetailView(views.APIView):
     def get(self, request, first_pk, second_pk, format=None):
         mediinfo = get_object_or_404(Medi_Info, pk=first_pk)  # Medi_info 모델 pk
         diagnosiss = Caution.objects.filter(id=second_pk)
@@ -142,14 +162,14 @@ class DOC_DiagnosisDetailView(views.APIView):
         return Response(combined_data)
 
 #의사_약물처방 리스트
-class DOC_PrescriptionListView(views.APIView):
+class PrescriptionListView(views.APIView):
     def get(self, request, pk, format=None):
         pres = Prescription.objects.all(info_id=pk)
         serializer = PrescriptionSerializer(pres, many=True) #필드 제한 필요
         return Response(serializer.data)
     
 #의사_약물처방 상세조회
-class DOC_PrescriptionDetailView(views.APIView):
+class PrescriptionDetailView(views.APIView):
     def get(self, request, first_pk, second_pk, format=None):
         mediinfo = get_object_or_404(Medi_Info, pk=first_pk)  # Medi_info 모델 pk
         #prescriptions = Caution.objects.filter(pk=second_pk)
@@ -169,14 +189,14 @@ class DOC_PrescriptionDetailView(views.APIView):
         return Response(combined_data)
 
 #의사_수술 리스트
-class DOC_SurgeryListView(views.APIView):
+class SurgeryListView(views.APIView):
     def get(self, request, pk, format=None):
         surs = Surgery.objects.all(info_id=pk)
         serializer = SurgerySerializer(surs, many=True) #필드 제한 필요
         return Response(serializer.data)
     
 #의사_수술 상세조회
-class DOC_SurgeryDetailView(views.APIView):
+class SurgeryDetailView(views.APIView):
     def get(self, request, first_pk, second_pk, format=None):
         mediinfo = get_object_or_404(Medi_Info, pk=first_pk)  # Medi_info 모델 pk
         #surgery = Surgery.objects.filter(info_id=first_pk, id=second_pk)
@@ -195,28 +215,3 @@ class DOC_SurgeryDetailView(views.APIView):
         }
 
         return Response(combined_data)
-    
-''' #의사 기준으로 완성하고 환자 건드리기
-#환자_의료정보 상세조회
-class PAT_MediInfoDetailView(views.APIView):
-    def get(self, request, pk, format=None):
-        users = get_object_or_404(User, pk=pk) #user id로 가져오면 되는거 아닌가 근데 왜 안될까요
-        mediinfos = Caution.objects.filter(user_id=pk)  # Medi_info 모델 pk
-        cautions = Caution.objects.filter(user_id=pk)
-        famhistories = Fam_History.objects.filter(user_id=pk)
-        guardians = Guardian.objects.filter(user_id=pk)
-
-        medi_serializers = [MediInfoSerializer(mediinfo) for mediinfo in mediinfos]
-        cau_serializers = [CautionSerializer(caution) for caution in cautions]
-        fam_serializers = [FamHisSerializer(famhistory) for famhistory in famhistories]
-        gua_serializers = [GuardianSerializer(guardian) for guardian in guardians]
-
-        combined_data = {
-            'medi':[medi_serializer.data for medi_serializer in medi_serializers],
-            'cau': [cau_serializer.data for cau_serializer in cau_serializers],
-            'fam': [fam_serializer.data for fam_serializer in fam_serializers],
-            'gua': [gua_serializer.data for gua_serializer in gua_serializers]
-        }
-
-        return Response(combined_data)
-'''
