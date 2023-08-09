@@ -152,7 +152,8 @@ class DOC_PrescriptionListView(views.APIView):
 class DOC_PrescriptionDetailView(views.APIView):
     def get(self, request, first_pk, second_pk, format=None):
         mediinfo = get_object_or_404(Medi_Info, pk=first_pk)  # Medi_info 모델 pk
-        prescriptions = Caution.objects.filter(info_id=first_pk)
+        #prescriptions = Caution.objects.filter(pk=second_pk)
+        prescriptions = get_object_or_404(Prescription, pk=first_pk)
         medications = Medication.objects.filter(pre_id=second_pk) #얘 pk 이렇게 받는게 맞나..?
 
         medi_serializer = MediInfoSerializer(mediinfo)
@@ -178,21 +179,19 @@ class DOC_SurgeryListView(views.APIView):
 class DOC_SurgeryDetailView(views.APIView):
     def get(self, request, first_pk, second_pk, format=None):
         mediinfo = get_object_or_404(Medi_Info, pk=first_pk)  # Medi_info 모델 pk
-        surgerys = Caution.objects.filter(info_id=first_pk, id=second_pk)
-        diagnosiss = Diagnosis.objects.filter(sur_id=second_pk)
-        doctors = Medication.objects.filter(pre_id=second_pk) #얘 pk 이렇게 받는게 맞나..?
+        #surgery = Surgery.objects.filter(info_id=first_pk, id=second_pk)
+        surgerys = get_object_or_404(Surgery, pk=second_pk)
+        diagnosiss = Diagnosis.objects.filter(id=surgerys.diag_id)
 
         medi_serializer = MediInfoSerializer(mediinfo)
         sur_serializers = [SurgerySerializer(surgery) for surgery in surgerys]
         diag_serializers = [DiagnosisSerializer(diagnosis) for diagnosis in diagnosiss]
-        doc_serializers = [DoctorSerializer(doctors) for doctor in doctors]
         
         
         combined_data = {
             'medi': medi_serializer.data,
             'sur': [sur_serializer.data for sur_serializer in sur_serializers],
-            'diag': [diag_serializer.data for diag_serializer in diag_serializers],
-            'doc': [doc_serializer.data for doc_serializer in doc_serializers]
+            'diag': [diag_serializer.data for diag_serializer in diag_serializers]
         }
 
         return Response(combined_data)

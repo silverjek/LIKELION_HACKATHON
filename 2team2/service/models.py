@@ -148,4 +148,5 @@ class Surgery(models.Model) :
     surPost = models.TextField(null=False, blank=False, default='')
     surTube = models.BooleanField(default=False) #False-무 / True-유
     updateDate = models.DateTimeField(auto_now_add=True)
+    docSign = models.ImageField()
     #approveDate = models.DateTimeField() --- erd에는 있는데 api명세서에는 없어서 일단 빼두었습니다
