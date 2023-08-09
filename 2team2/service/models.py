@@ -8,12 +8,7 @@ class User(AbstractUser):
     password = models.CharField(max_length=20) #기본 8자 이상의 규칙이 있어 minimum 설정은 건너뛰었습니다
     userType = models.BooleanField(default=True) #True-일반사용자 / False-의료인사용자
     latestUpdate = models.DateTimeField(null=True, blank=True)
-    #userName --- 아이디, 비밀번호, 이름은 기본 필드가 존재
-    #userSSN --- 이 아래로 User 모델의 정보를 실사용하는 경우가 없음
-    #userPhone
-    #userEmail
-    #userAddress
-    #userPatient
+
 
 class Medi_Info(models.Model):
     user_id = models.ForeignKey(User, on_delete=models.CASCADE)

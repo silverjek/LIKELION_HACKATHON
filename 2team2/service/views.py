@@ -7,50 +7,97 @@ from rest_framework.response import Response
 
 
 # Create your views here.
+
 '''
-#환자  NFT 접근 시 페이지
-class DOC_PatNFTPage(views.APIView):
-    def get(self, request, pk, format=None):
-        users=get_object_or_404(User, pk=pk) #User 모델 pk
-        serializer=UserSerializer(users)
-        #User 모델 id, userName, latesUpdate
-        return Response(serializer.data)
+<백엔드 자체 관리용> -----------------------------------------------------
 '''
+#의사 정보등록
+class Doctor_Write(views.APIView):
+    def post(self, request, format=None):
+        doc_serializer=DoctorSerializer(data=request.data)
+        if doc_serializer.is_valid():
+            doc_serializer.save()
+            return Response(doc_serializer.data)
+        return Response(doc_serializer.errors)
+
+#기본의료 정보등록
 class MediInfo_Write(views.APIView):
     def post(self, request, format=None):
         medi_serializer=MediInfoSerializer(data=request.data)
         if medi_serializer.is_valid():
             medi_serializer.save()
             return Response(medi_serializer.data)
-        return Response( medi_serializer.errors)
-    
+        return Response(medi_serializer.errors)
+
+#알러지/부작용 정보등록     
 class Caution_Write(views.APIView):
     def post(self, request, format=None):
         cau_serializer=CautionSerializer(data=request.data)
         if cau_serializer.is_valid():
             cau_serializer.save()
             return Response(cau_serializer.data)
-        return Response( cau_serializer.errors)
+        return Response(cau_serializer.errors)
 
-class Fam_Write(views.APIView):
+#가족력 정보등록
+class FamHis_Write(views.APIView):
     def post(self, request, format=None):
         fam_serializer=FamHisSerializer(data=request.data)
         if fam_serializer.is_valid():
             fam_serializer.save()
             return Response(fam_serializer.data)
-        return Response( fam_serializer.errors)
+        return Response(fam_serializer.errors)
 
-class Gua_Write(views.APIView):
+#보호자 정보등록
+class Guardian_Write(views.APIView):
     def post(self, request, format=None):
         gua_serializer=GuardianSerializer(data=request.data)
         if gua_serializer.is_valid():
             gua_serializer.save()
             return Response(gua_serializer.data)
-        return Response( gua_serializer.errors)
+        return Response(gua_serializer.errors)
     
-#환자 의료정보 상세조회
+#진단 정보등록
+class Diagnosis_Write(views.APIView):
+    def post(self, request, format=None):
+        diag_serializer=DiagnosisSerializer(data=request.data)
+        if diag_serializer.is_valid():
+            diag_serializer.save()
+            return Response(diag_serializer.data)
+        return Response(diag_serializer.errors)
 
-class MediInfoDetailView(views.APIView):
+#처방 정보등록    
+class Prescription_Write(views.APIView):
+    def post(self, request, format=None):
+        pre_serializer=PrescriptionSerializer(data=request.data)
+        if pre_serializer.is_valid():
+            pre_serializer.save()
+            return Response(pre_serializer.data)
+        return Response(pre_serializer.errors)
+    
+#약 정보등록    
+class Medication_Write(views.APIView):
+    def post(self, request, format=None):
+        pre_serializer=PrescriptionSerializer(data=request.data)
+        if pre_serializer.is_valid():
+            pre_serializer.save()
+            return Response(pre_serializer.data)
+        return Response(pre_serializer.errors)
+
+#수술 정보등록    
+class Surgery_Write(views.APIView):
+    def post(self, request, format=None):
+        sur_serializer=SurgerySerializer(data=request.data)
+        if sur_serializer.is_valid():
+            sur_serializer.save()
+            return Response(sur_serializer.data)
+        return Response(sur_serializer.errors)
+    
+'''
+<의사> ------------------------------------------------------------------
+'''
+
+#의사_의료정보 상세조회
+class DOC_MediInfoDetailView(views.APIView):
     def get(self, request, pk, format=None):
         mediinfo = get_object_or_404(Medi_Info, pk=pk)  # Medi_info 모델 pk
         cautions = Caution.objects.filter(info_id=pk)
@@ -69,176 +116,108 @@ class MediInfoDetailView(views.APIView):
             'gua': [gua_serializer.data for gua_serializer in gua_serializers]
         }
 
-        #Caution 모델의 id, cauMedicine, cauLevel, cauName, cauType, cauSymptom
-        #Fam_History 모델의 id, info_id, famDiag, famRelation, famBirth, famDeath,, famDReason
-        #Guardian 모델의 id, info_id, guaName, guaRelation, guaPhone
         return Response(combined_data)
-'''
-#환자 진료내역 조회 - 진단 리스트   
-class DOC_DiagnosisList(views.APIView):
+
+#의사_진단 리스트
+class DOC_DiagnosisListView(views.APIView):
     def get(self, request, pk, format=None):
-        diagnosises=get_object_or_404(Diagnosis, pk=Medi_Info.id) #Medi_info 모델 pk
-        serializer=DiagnosisSerializer(diagnosises)
-        #Diagnosis 모델의 id, diagHospital, diagDate, diagDoc, diagName, diagCode, diagLoc
-        return Response(serializer.data)
-
-#상세 진단기록 조회
-class DOC_DiagnosisDetail(views.APIView):
-    def get(self, requestk, pk, formay=None):
-        diagnosisdetails=get_object_or_404() #Medi_Info 모델 pk, Diagnosis 모델 pk
-        #Medi_info 모델 id
-        #Diagnosis 모델 id, updateDate, diag,Date, diagRegi, diagNum, diagMajor, diagMajCode, diagTF, diagMinor, diagMinCode, diagInitDate, diagDate, diagMemo, diagIn, diagOut, diagUsage, diagETC
-        #Doctor 모델 id, docName, docHospital
-        #Medi_info 모델 id, patName, patSSN, patAge, patSex, patPhone, patAddress
-
-#환자 진료내역 조회 - 약물처방 리스트
-class DOC_MedicationList(views.APIView):
-    def get(self, request, pk, format=None):
-        medications=get_object_or_404(Medication, pk=Medi_Info.id)
-        serializer=PrescriptionSerializer(medications)
-        #Medi_info 모델 id
-        #Prescription 모델 id, prePharm, preAddress, preChem, preDate
-        return Response(serializer.data)
-
-#상세 약물처방 조회
-class DOC_MedictionDetail(views.APIView):
-    def get(self, request, pk, format=None):
-        #Medi_Info 모델 id
-        #Prescription 모델 id, preDate, prePharm, preAddress, preChem
-        #Diagnosis 모델 id
-        #Medication 모델 id, mediName, mediEffect, mediDetail, mediCode, mediUnit, mediAmount, mediCount, mediPeriod
-
-
-
-#환자 진료내역 조회 - 수술 리스트
-class DOC_SurgeryList(views.APIView):
-    def get(self, request, pk, format=None):
-        surgeries=get_object_or_404(Surgery, pk=Medi_Info.id) #Medi_Info 모델 pk
-        serializer=SurgerySerializer(surgeries)
-        #Diagnosis 모델의 id, diagHospital, diagDate, diagName, diagCode, diagDoc
-        #Surgery 모델의 id, surDate, surName, surCode, surDoc
+        diags = Diagnosis.objects.all(info_id=pk)
+        serializer = DiagnosisSerializer(diags, many=True) #필드 제한 필요
         return Response(serializer.data)
     
-#상세 수술기록 조회
-class DOC_SurgeryDetail(views.APIView):
+#의사_진단 상세조회
+class DOC_DiagnosisDetailView(views.APIView):
+    def get(self, request, first_pk, second_pk, format=None):
+        mediinfo = get_object_or_404(Medi_Info, pk=first_pk)  # Medi_info 모델 pk
+        diagnosiss = Caution.objects.filter(id=second_pk)
+
+        medi_serializer = MediInfoSerializer(mediinfo)
+        diag_serializers = [DiagnosisSerializer(diagnosis) for diagnosis in diagnosiss]
+        
+        combined_data = {
+            'medi': medi_serializer.data,
+            'diag': [diag_serializer.data for diag_serializer in diag_serializers]
+        }
+
+        return Response(combined_data)
+
+#의사_약물처방 리스트
+class DOC_PrescriptionListView(views.APIView):
     def get(self, request, pk, format=None):
-        #Medi_Info 모델 pk
-        #Surgery 모델 pk
-        #Surgery 모델 surChartNum, updateDate, surWriter, surDate, surNum, surHospital, surField, surOper, surAssi, surAnesDoc, surName,surCode, surPreDiag, surPostDiag, surAnes, surEvent, surRemoval, surBloodTrans, surPre, surDur, surPost, surTube
-        #Diag 모델 id, diagDate, diagName, diagCode, diagDoc, diagHospital
-        #Medi_Info 모델 patName, patSSN, patAge, patSex, patPhone
-        #Doctor 모델 id, docSign
-
-#의사 랜딩 페이지(승인된 NFT 리스트)
-class DocPage(views.APIView): 
-    def get(self,format=None):
-        #info_id, patName, approveDate 
-
-#환자 랜딩 페이지 
-class PatPage(views.APIView):
-    def get(self,format=None):
-        # User 모델 pk
-        #user_id, patName, updateDate
-
-#본인 의료정보 상세조회 
-class PAT_MediInfo(views.APIView):
-    def get(self, request, pk, format=None):
-        mediinfo=get_object_or_404(Medi_Info, pk=User.id) #User 모델 pk
-        serializer=MediInfoSerializer(mediinfo)
-        #User 모델 pk
-        #Medi_Info 모델 pk, patName, patSex, patBirth, patSSN, patBlood, patRH, patHeight, patWeight, patPhone, patAddress
-        #Caution 모델 pk, cauMedicine, cauLevel, cauName, cauType, cauSymptom
-        #Fam_History 모델 pk, famDiag, famRelation, famBirth, famDeath, famDReason
-        #Guardian 모델 pk, guaName, guaRelation, guaPhone
-        #
+        pres = Prescription.objects.all(info_id=pk)
+        serializer = PrescriptionSerializer(pres, many=True) #필드 제한 필요
         return Response(serializer.data)
+    
+#의사_약물처방 상세조회
+class DOC_PrescriptionDetailView(views.APIView):
+    def get(self, request, first_pk, second_pk, format=None):
+        mediinfo = get_object_or_404(Medi_Info, pk=first_pk)  # Medi_info 모델 pk
+        prescriptions = Caution.objects.filter(info_id=first_pk)
+        medications = Medication.objects.filter(pre_id=second_pk) #얘 pk 이렇게 받는게 맞나..?
 
-#본인 진료내역 조회 - 진단 리스트
-class PAT_DiagnosisList(views.APIView):
+        medi_serializer = MediInfoSerializer(mediinfo)
+        pre_serializers = [PrescriptionSerializer(prescription) for prescription in prescriptions]
+        med_serializers = [MedicationSerializer(medication) for medication in medications]
+        
+        combined_data = {
+            'medi': medi_serializer.data,
+            'pre': [pre_serializer.data for pre_serializer in pre_serializers],
+            'med': [med_serializer.data for med_serializer in med_serializers]
+        }
+
+        return Response(combined_data)
+
+#의사_수술 리스트
+class DOC_SurgeryListView(views.APIView):
     def get(self, request, pk, format=None):
-        diagnosises=get_object_or_404(Diagnosis, pk=User.id) #User 모델 pk
-        serializer=DiagnosisSerializer(diagnosises)
-        #Diagnosis 모델의 id, diagHospital, diagDate, diagDoc, diagName, diagCode, diagLoc
+        surs = Surgery.objects.all(info_id=pk)
+        serializer = SurgerySerializer(surs, many=True) #필드 제한 필요
         return Response(serializer.data)
+    
+#의사_수술 상세조회
+class DOC_SurgeryDetailView(views.APIView):
+    def get(self, request, first_pk, second_pk, format=None):
+        mediinfo = get_object_or_404(Medi_Info, pk=first_pk)  # Medi_info 모델 pk
+        surgerys = Caution.objects.filter(info_id=first_pk, id=second_pk)
+        diagnosiss = Diagnosis.objects.filter(sur_id=second_pk)
+        doctors = Medication.objects.filter(pre_id=second_pk) #얘 pk 이렇게 받는게 맞나..?
 
-#상세 진단기록 조회
-class PAT_DiagnosisDetail(views.APIView):
-    def get(self, requestk, pk, formay=None):
-        #User 모델 pk
-        ##Diagnosis 모델 id, updateDate, diag,Date, diagRegi, diagNum, diagMajor, diagMajCode, diagTF, diagMinor, diagMinCode, diagInitDate, diagDate, diagMemo, diagIn, diagOut, diagUsage, diagETC
-        #Doctor 모델 id, docName, docHospital
-        #Medi_info 모델 id, patName, patSSN, patAge, patSex, patPhone, patAddress
-        diagnosisdetails=get_object_or_404()
+        medi_serializer = MediInfoSerializer(mediinfo)
+        sur_serializers = [SurgerySerializer(surgery) for surgery in surgerys]
+        diag_serializers = [DiagnosisSerializer(diagnosis) for diagnosis in diagnosiss]
+        doc_serializers = [DoctorSerializer(doctors) for doctor in doctors]
+        
+        
+        combined_data = {
+            'medi': medi_serializer.data,
+            'sur': [sur_serializer.data for sur_serializer in sur_serializers],
+            'diag': [diag_serializer.data for diag_serializer in diag_serializers],
+            'doc': [doc_serializer.data for doc_serializer in doc_serializers]
+        }
 
-#본인 진료내역 조회 - 약물처방 리스트  
-class PAT_MedicationList(views.APIView):
+        return Response(combined_data)
+    
+''' #의사 기준으로 완성하고 환자 건드리기
+#환자_의료정보 상세조회
+class PAT_MediInfoDetailView(views.APIView):
     def get(self, request, pk, format=None):
-        medications=get_object_or_404(Medication, pk=User.id) #User 모델 pk
-        serializer=PrescriptionSerializer(medications)
-        #Prescription 모델 id, prePharm, preAddress, preChem, preDate
-        return Response(serializer.data)
+        users = get_object_or_404(User, pk=pk) #user id로 가져오면 되는거 아닌가 근데 왜 안될까요
+        mediinfos = Caution.objects.filter(user_id=pk)  # Medi_info 모델 pk
+        cautions = Caution.objects.filter(user_id=pk)
+        famhistories = Fam_History.objects.filter(user_id=pk)
+        guardians = Guardian.objects.filter(user_id=pk)
 
-#상세 약물처방 조회
-class PAT_MedictionDetail(views.APIView):
-    def get(self, request, pk, format=None):
-        #User 모델 pk
-        #Prescription 모델 id, preDate, prePharm, preAddress, preChem
-        #Diagnosis 모델 id
-        #Medication 모델 id, mediName, mediEffect, mediDetail, mediCode, mediUnit, mediAmount, mediCount, mediPeriod
+        medi_serializers = [MediInfoSerializer(mediinfo) for mediinfo in mediinfos]
+        cau_serializers = [CautionSerializer(caution) for caution in cautions]
+        fam_serializers = [FamHisSerializer(famhistory) for famhistory in famhistories]
+        gua_serializers = [GuardianSerializer(guardian) for guardian in guardians]
 
+        combined_data = {
+            'medi':[medi_serializer.data for medi_serializer in medi_serializers],
+            'cau': [cau_serializer.data for cau_serializer in cau_serializers],
+            'fam': [fam_serializer.data for fam_serializer in fam_serializers],
+            'gua': [gua_serializer.data for gua_serializer in gua_serializers]
+        }
 
-#본인 진료내역 조회 - 수술 리스트
-class PAT_SurgeryList(views.APIView):
-    def get(self, request, pk, format=None):
-        surgeries=get_object_or_404(Surgery, pk=User.id) #User 모델 pk
-        serializer=SurgerySerializer(surgeries)
-        #Diagnosis 모델의 id, diagHospital, diagDate, diagName, diagCode, diagDoc
-        #Surgery 모델의 id, surDate, surName, surCode, surDoc
-        return Response(serializer.data)
-
-#상세 수술기록 조회
-class PAT_SurgeryDetail(views.APIView):
-    def get(self, request, pk, format=None):
-        #User 모델 pk
-        #Surgery 모델 pk
-        #Surgery 모델 surChartNum, updateDate, surWriter, surDate, surNum, surHospital, surField, surOper, surAssi, surAnesDoc, surName,surCode, surPreDiag, surPostDiag, surAnes, surEvent, surRemoval, surBloodTrans, surPre, surDur, surPost, surTube
-        #Diag 모델 id, diagDate, diagName, diagCode, diagDoc, diagHospital
-        #Medi_Info 모델 patName, patSSN, patAge, patSex, patPhone
-        #Doctor 모델 id, docSign
-
-
-#의사 - NFT 갱신 기록 
-class DOC_UpdateRecord(views.APIView):
-    def get(self, request, pk, format=None):
-        #Medi_Info 모델 pk, updateDate
-        #Diagnosis 모델 pk, diagHospital, updateDate, diagDoc
-        #Surgery 모델 pk, surHospital, updateDate, surOperator
-        #Medication 모델 pk, updateDate
-
-#환자 - NFT 갱신 기록 
-class PAT_UpdateRecord(views.APIView):
-    def get(self, request, pk, format=None):
-        #User 모델 pk
-        #Medi_Info 모델 id, updateDate
-        #Diagnosis 모델 id, diagHospital, updateDate, diagDoc
-        #Surgery 모델 id, surHospital, updateDate, surOperator
-        #Medication 모델 id, updateDate
-
-class SignUp(views.APIView):
-    def get():
-
-class LogIn(views.APIView):
-    def post():
-
-class DocCertificate(views.APIView):
-    def post():
-
-class DOC_diagnosis_update(views.APIView):
-    def post():
-
-class DOC_medication_update(views.APIView):
-    def post():
-
-class DOC_surgery_update(views.APIView):
-    def post():
+        return Response(combined_data)
 '''
