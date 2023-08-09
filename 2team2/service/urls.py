@@ -7,7 +7,8 @@ urlpatterns=[
     
     #path('/doctor/main/', DocPage.as_view()),
     #path('/doctor/access/<int:pk>/', DOC_PatNFTPage.as_view()),
-    path('manage/write/doctor/', Doctor_Write.as_view()),
+    
+    #path('manage/write/doctor/', Doctor_Write.as_view()),
     path('manage/write/mediinfo/', MediInfo_Write.as_view()),
     path('manage/write/caution/', Caution_Write.as_view()),
     path('manage/write/famhis/', FamHis_Write.as_view()),
@@ -26,6 +27,6 @@ urlpatterns=[
     path('doctor/access/<int:pk>/medication/',PrescriptionListView.as_view()),
     path('doctor/access/<int:first_pk>/medication/<int:second_pk>/',PrescriptionDetailView.as_view()),
     path('doctor/access/<int:pk>/surgery/',SurgeryListView.as_view()),
-    path('/doctor/access/<int:first_pk>/surgery/<int:second_pk>/',SurgeryDetailView.as_view()),
+    path('doctor/access/<int:first_pk>/surgery/<int:second_pk>/',SurgeryDetailView.as_view()),
     
 ]

@@ -12,6 +12,7 @@ from rest_framework.response import Response
 <백엔드 자체 관리용> -----------------------------------------------------
 '''
 #의사 정보등록
+'''
 class Doctor_Write(views.APIView):
     def post(self, request, format=None):
         doc_serializer=DoctorSerializer(data=request.data)
@@ -19,7 +20,7 @@ class Doctor_Write(views.APIView):
             doc_serializer.save()
             return Response(doc_serializer.data)
         return Response(doc_serializer.errors)
-
+'''
 #기본의료 정보등록
 class MediInfo_Write(views.APIView):
     def post(self, request, format=None):
@@ -77,11 +78,11 @@ class Prescription_Write(views.APIView):
 #약 정보등록    
 class Medication_Write(views.APIView):
     def post(self, request, format=None):
-        pre_serializer=PrescriptionSerializer(data=request.data)
-        if pre_serializer.is_valid():
-            pre_serializer.save()
-            return Response(pre_serializer.data)
-        return Response(pre_serializer.errors)
+        med_serializer=MedicationSerializer(data=request.data)
+        if med_serializer.is_valid():
+            med_serializer.save()
+            return Response(med_serializer.data)
+        return Response(med_serializer.errors)
 
 #수술 정보등록    
 class Surgery_Write(views.APIView):
@@ -141,7 +142,7 @@ class MediInfoDetailView(views.APIView):
 #의사_진단 리스트
 class DiagnosisListView(views.APIView):
     def get(self, request, pk, format=None):
-        diags = Diagnosis.objects.all(info_id=pk)
+        diags = Diagnosis.objects.filter(info_id=pk)
         serializer = DiagnosisSerializer(diags, many=True) #필드 제한 필요
         return Response(serializer.data)
     
@@ -149,14 +150,16 @@ class DiagnosisListView(views.APIView):
 class DiagnosisDetailView(views.APIView):
     def get(self, request, first_pk, second_pk, format=None):
         mediinfo = get_object_or_404(Medi_Info, pk=first_pk)  # Medi_info 모델 pk
-        diagnosiss = Caution.objects.filter(id=second_pk)
+        diagnosiss = get_object_or_404(Diagnosis, id=second_pk)
 
         medi_serializer = MediInfoSerializer(mediinfo)
-        diag_serializers = [DiagnosisSerializer(diagnosis) for diagnosis in diagnosiss]
-        
+        #diag_serializers = [DiagnosisSerializer(diagnosis,many=True) for diagnosis in diagnosiss]
+        diag_serializers = DiagnosisSerializer(diagnosiss)
+
         combined_data = {
             'medi': medi_serializer.data,
-            'diag': [diag_serializer.data for diag_serializer in diag_serializers]
+            #'diag': [diag_serializer.data for diag_serializer in diag_serializers]
+            'diag': diag_serializers.data
         }
 
         return Response(combined_data)
@@ -164,7 +167,7 @@ class DiagnosisDetailView(views.APIView):
 #의사_약물처방 리스트
 class PrescriptionListView(views.APIView):
     def get(self, request, pk, format=None):
-        pres = Prescription.objects.all(info_id=pk)
+        pres = Prescription.objects.filter(info_id=pk)
         serializer = PrescriptionSerializer(pres, many=True) #필드 제한 필요
         return Response(serializer.data)
     
@@ -173,16 +176,16 @@ class PrescriptionDetailView(views.APIView):
     def get(self, request, first_pk, second_pk, format=None):
         mediinfo = get_object_or_404(Medi_Info, pk=first_pk)  # Medi_info 모델 pk
         #prescriptions = Caution.objects.filter(pk=second_pk)
-        prescriptions = get_object_or_404(Prescription, pk=first_pk)
+        prescriptions = get_object_or_404(Prescription, pk=second_pk)
         medications = Medication.objects.filter(pre_id=second_pk) #얘 pk 이렇게 받는게 맞나..?
 
         medi_serializer = MediInfoSerializer(mediinfo)
-        pre_serializers = [PrescriptionSerializer(prescription) for prescription in prescriptions]
+        pre_serializers = PrescriptionSerializer(prescriptions)
         med_serializers = [MedicationSerializer(medication) for medication in medications]
         
         combined_data = {
             'medi': medi_serializer.data,
-            'pre': [pre_serializer.data for pre_serializer in pre_serializers],
+            'pre': pre_serializers.data,
             'med': [med_serializer.data for med_serializer in med_serializers]
         }
 
@@ -191,7 +194,7 @@ class PrescriptionDetailView(views.APIView):
 #의사_수술 리스트
 class SurgeryListView(views.APIView):
     def get(self, request, pk, format=None):
-        surs = Surgery.objects.all(info_id=pk)
+        surs = Surgery.objects.filter(info_id=pk)
         serializer = SurgerySerializer(surs, many=True) #필드 제한 필요
         return Response(serializer.data)
     

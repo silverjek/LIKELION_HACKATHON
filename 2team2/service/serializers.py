@@ -61,18 +61,19 @@ class MediInfoSerializer(serializers.ModelSerializer):
         model = Medi_Info
         fields = ['id','user_id','patName','patSex','patBirth',
                   'patAddress','patSSN','patBlood','patRH',
-                  'patHeight','patWeight','patPhone','updateDate','latestUpdate', 'caution', 'fam_history', 'guardian']
+                  'patHeight','patWeight','patPhone','updateDate','caution', 'fam_history', 'guardian']
 
+'''
 class DoctorSerializer(serializers.ModelSerializer):
     class Meta:
         model = Doctor
         fields = ['id','user_id','docHospital','docMajor','docName',
                   'docSign','docFile']
-        
+'''        
 class DiagnosisSerializer(serializers.ModelSerializer):
     class Meta:
         model = Diagnosis
-        fields = ['id','user_id','info_id','doc_id','diagDate',
+        fields = ['id','user_id','info_id','diagDate',
                   'diagRegi','diagNum','diagMajor','diagMajCode',
                   'diagTF','diagMinor','diagMinCode','diagInitDate',
                   'diagMemo','diagIn','diagOut','diagUSage',
@@ -88,19 +89,19 @@ class MedicationSerializer(serializers.ModelSerializer):
 class PrescriptionSerializer(serializers.ModelSerializer):
     medication = MedicationSerializer(many=True, read_only=True)
     class Meta:
-        moel = Prescription
+        model = Prescription
         fields = ['id','user_id','info_id','diag_id','prePharm',
-                  'preAddress','preDate','preChem','updateDate']
+                  'preAddress','preDate','preChem','updateDate','medication']
         
 class SurgerySerializer(serializers.ModelSerializer):
     diagnosis = DiagnosisSerializer(many=True, read_only=True)
     mediinfo = MediInfoSerializer(many=True, read_only=True)
-    doctor = DoctorSerializer(many=True, read_only=True)
+    
     class Meta:
         model = Surgery
-        fields = ['id','user_id','info_id','diag_id','doc_id',
-                  'surChartNu','surWriter','surDate','surNum','surHospital',
+        fields = ['id','user_id','info_id','diag_id',
+                  'surChartNum','surWriter','surDate','surNum','surHospital',
                   'surField','surOper','surAssi','surAnesDoc','surName',
                   'surCode','surPreDiag','surPostDiag','surAnes','surEvent',
                   'surRemoval','surBloodTrans','surPre','surDur','surPost',
-                  'surTube','updateDate']
+                  'surTube','updateDate','diagnosis','mediinfo']
